@@ -2,7 +2,3 @@
 *.pcap
 *.txt
 *.mat
-
-
-# 或略目录
-/resources
