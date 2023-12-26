@@ -11,25 +11,41 @@ clc;
 clear;
 close all;
 
-fileName = '20231214-0211-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-8cm-26.6℃-Spine.pcap';
-lpn = 16 *2 * 2; overlap = 18;  % 像素重叠个数 
+file_qa = '20231214-0210-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-8cm-26.4℃-QA.pcap';
+file_spine = '20231214-0211-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-8cm-26.6℃-Spine.pcap';
+lpn = 16 *2 * 2;
+overlap = 18;
 
-[width, height, channels, PC]= pixel_photon_count(fileName);
+% 骨密度计算验证
+[S, E] = bmd_parameter(file_qa, lpn);
+[raws, imgs, IMgs] = image_stitch(file_spine, lpn, overlap);
 
-% 解析pcap数据文件得到需要的图像数据
-decPackets = parse_pacp(fileName); % 解析pcap文件
-[PC, section] = merge_chip_data(decPackets, lpn); % 解析pcap文件
-[raws, imgs, IMgs] = image_stitching(PC, section, lpn, overlap);
+% 计算没像素点的骨密度值
+bmds = bone_mineral_density(raws, S, E);
+data_analysis(bmds);
+
+
+ 
+
+rawThr = {[0 500], [0 500], [0 500], [0 500], [0 500]};
+imgThr = {[0 0.2], [0 0.2], [0 0.2], [0 0.2], [0 0.2]};
+IMgThr = {[0 0.2], [0 0.2], [0 0.2], [0 0.2], [0 0.2]};
 
 for i=1:5
     raw = raws(:, :, i);
     img = imgs(:, :, i);    
     IMg = IMgs(:, :, i); 
-  
     eval(['raw', num2str(i), '=', 'raw', ';']);
     eval(['img', num2str(i), '=', 'img', ';']);
     eval(['IMg', num2str(i), '=', 'IMg', ';']);
 end
+
+% figure(i);
+% imshow(raw);
+% figure(2);
+% imshow(img);
+% figure(3);
+% imshow(IMg);
 
 
 
