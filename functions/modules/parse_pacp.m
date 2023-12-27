@@ -35,7 +35,7 @@ end
 
 
 % 读取PCAP文件
-function  [hexPackets, packets] =  parse_file (fileName)
+function  [hexPackets, packets] = parse_file(fileName)
      % 根据数据协议解析PCAP文件
     pcapReaderObj = pcapReader(strcat(pwd, '\resources\FILES\', fileName));
     decodedPackets = readAll(pcapReaderObj);
@@ -60,7 +60,7 @@ function  [hexPackets, packets] =  parse_file (fileName)
 end
 
 
-function  decPackets = hex_to_dec (hexPackets, packets)
+function  decPackets = hex_to_dec(hexPackets, packets)
     decPackets = zeros(packets, 160 + 4);
     decPackets(1:end, 1:160) = hexPackets(1:end, 5:2:324)*256 + hexPackets(1:end, 6:2:324);
     decPackets(1:end, 161) = hexPackets(1:end, 325)*256 + hexPackets(1:end, 326);

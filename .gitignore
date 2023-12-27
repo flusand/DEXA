@@ -1,4 +1,4 @@
-# 忽略文件
-*.pcap
-*.txt
-*.mat
+### 忽略文件 ###
+/resources/FILES/*.pcap
+/resources/FILES/*.txt
+/resources/FILES/*.mat

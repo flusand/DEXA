@@ -41,7 +41,7 @@ end
 % 寻找铝台阶的最厚处的边缘
 function  index = step_edge(segment)
     % 直接使用光子计数成像效果较差，使用空气校准之后的数据成像较好
-    air_avg = repmat(mean(segment(1:end, 100:200, 1:end), 2) + 1, [1, size(segment, 2), 1]);
+    air_avg = repmat(mean(segment(1:end, 100:200, 1:end) + 1, 2), [1, size(segment, 2), 1]);
     cali = (segment+1) ./ air_avg; 
     gauss_img = imgaussfilt(cali(:, :, 1).^0.1);
 
@@ -56,7 +56,7 @@ end
 
 % 每个台阶扫描的数据
 function  pixel_pc_prj = get_step_pc(segment, index)
-    air_avg = repmat(mean(segment(1:end, 100:200, 1:end), 2) + 1, [1, size(segment, 2), 1]);
+    air_avg = repmat(mean(segment(1:end, 100:200, 1:end) + 1, 2), [1, size(segment, 2), 1]);
     pc_prj = -log((segment + 1) ./ air_avg);
     
     % 64像素对36组AL、PMMA厚度组合的高低能数据 
