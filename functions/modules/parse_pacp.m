@@ -8,7 +8,7 @@
 % Function  : Parsing Wireshark packet capture files
 % ================================================================================
 
-function  [raws, imgs] = parse_pacp(fileName, lpn)
+function  [raws, cali] = parse_pacp(fileName, lpn)
     
     % 检查该文件是否解析
     matFile=strcat(pwd, '\resources\FILES\MAT\', replace(fileName, 'pcap', 'mat'));
@@ -27,10 +27,11 @@ function  [raws, imgs] = parse_pacp(fileName, lpn)
     [PC, section] = frame_merge (decPackets, lpn);
    
     % 将解析出来的数据转换成图像格式
-    [raws, imgs] = multi_channel_image (PC, section, lpn);
+    [raws, cali] = multi_channel_image (PC, section, lpn);
 
     % 将读取的pcap 保存对应的Mat文件
-    save(matFile, 'raws', 'imgs');
+    save(matFile, 'raws', 'cali');
+   
 end
 
 
@@ -112,7 +113,7 @@ end
 
 
 
-function  [raws, imgs] = multi_channel_image (PC, section, lpn)
+function  [raws, cali] = multi_channel_image (PC, section, lpn)
     % 空气校准
     air_avg = repmat(mean(PC(200:300, 1:end, 1:end), 1), [size(PC, 1), 1, 1]);
     pc = (PC+1) ./air_avg;
@@ -120,18 +121,20 @@ function  [raws, imgs] = multi_channel_image (PC, section, lpn)
     totalScan = size(section, 1);
 
     raws = zeros(lpn*totalScan, maxFrames, 5); % 原始数据 
-    imgs = zeros(lpn*totalScan, maxFrames, 5); % 空气校准数据
+    cali = zeros(lpn*totalScan, maxFrames, 5); % 空气校准数据
     for i= 1:totalScan
         raws_slices = permute(PC(section(i, 2):section(i, 3), 1:end, 1:end), [2 1 3]);
         imgs_slices = permute(pc(section(i, 2):section(i, 3), 1:end, 1:end), [2 1 3]);
         if mod(i,2) == 0
             raws((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(flip(raws_slices, 2), 2, 2);
-            imgs((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(flip(imgs_slices, 2), 2, 2);
+            cali((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(flip(imgs_slices, 2), 2, 2);
         else
             raws((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(raws_slices, 0, 2);
-            imgs((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(imgs_slices, 0, 2);
+            cali((i-1)*lpn + 1:i*lpn, 1:section(i, 4), 1:end) = circshift(imgs_slices, 0, 2);
         end
     end
 end
+
+
 
    

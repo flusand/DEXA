@@ -11,8 +11,8 @@ clc;
 clear;
 close all;
 
-qaFile = '20231214-0210-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-8cm-26.4℃-QA.pcap';
-spineFile = '20231214-0211-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-8cm-26.6℃-Spine.pcap';
+qaFile = '20231229-020102-80kV-0.2mA-100FPS-2.33cmX-0cmpsY-5cm-24.5℃-all-2.pcap';
+spineFile = '20231229-020102-80kV-0.2mA-100FPS-2.33cmX-0cmpsY-5cm-24.5℃-all-2.pcap';
 lpn = 16 *2 * 2;
 overlap = 18;
 
@@ -20,10 +20,33 @@ overlap = 18;
 [S, E] = bmd_parameter(qaFile, lpn);
 [raws, imgs, IMgs] = image_stitch(spineFile, lpn, overlap);
 
+for i=1:5
+    raw = raws(:, :, i);
+    img = imgs(:, :, i);    
+    IMg = IMgs(:, :, i); 
+    eval(['raw', num2str(i), '=', 'raw', ';']);
+    eval(['img', num2str(i), '=', 'img', ';']);
+    eval(['IMg', num2str(i), '=', 'IMg', ';']);
+end
+
 % 计算没像素点的骨密度值
 bmds = bone_mineral_density(raws, S, E);
 data_analysis(bmds);
 
 
 
-
+% x = 1:64;
+% pixel1 = img2(65:128, :);
+% avg1 = mean(pixel1, 2);
+% stds1 = std(pixel1, 0, 2);
+% 
+% pixel2 = img2(129:192, :);
+% avg2 = mean(pixel2, 2);
+% stds2 = std(pixel2, 0, 2);
+% 
+% pixel3 = img3(193:256, :);
+% avg3 = mean(pixel3, 2);
+% stds3 = std(pixel3, 0, 2);
+% 
+% plot(x, avg1','r-',x, avg2, 'b--', x, avg3,'g-.');
+% plot(x, stds1','r-',x, stds2, 'b--', x, stds3,'g-.');
