@@ -11,14 +11,14 @@ clc;
 clear;
 close all;
 
-qaFile = '20231229-020102-80kV-0.2mA-100FPS-2.33cmX-0cmpsY-5cm-24.5℃-all-2.pcap';
-spineFile = '20231229-020102-80kV-0.2mA-100FPS-2.33cmX-0cmpsY-5cm-24.5℃-all-2.pcap';
+qaFile = '20231227-020101-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-5cm-22.5℃-QA.pcap';
+spineFile = '20231227-020102-80kV-0.2mA-100FPS-2.33cmX-5cmpsY-5cm-22.5℃-QA.pcap';
 lpn = 16 *2 * 2;
 overlap = 18;
 
 % 骨密度计算验证
 [S, E] = bmd_parameter(qaFile, lpn);
-[raws, imgs, IMgs] = image_stitch(spineFile, lpn, overlap);
+[raws, imgs, IMgs] = image_stitch(qaFile, lpn, overlap);
 
 for i=1:5
     raw = raws(:, :, i);

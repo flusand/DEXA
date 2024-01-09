@@ -42,15 +42,16 @@ end
 function  index = step_edge(segment)
     % 直接使用光子计数成像效果较差，使用空气校准之后的数据成像较好
     air_avg = repmat(mean(segment(1:end, 100:200, 1:end) + 1, 2), [1, size(segment, 2), 1]);
-    cali = (segment+1) ./ air_avg; 
+    cali = (segment+1) ./ air_avg;
     gauss_img = imgaussfilt(cali(:, :, 1).^0.1);
-
     % 找出梯度较大的位置
     edges = int16(edge(gauss_img, "canny"));
     possible_edge = sum(edges, 1);
     possible_edge(possible_edge < 50) = 0;
     [~, col] = find(possible_edge ~= 0);
     index = col(1);
+
+    % imwrite(cali(:, :, 1), '0.png')
 end
 
 
@@ -59,6 +60,9 @@ function  pixel_pc_prj = get_step_pc(segment, index)
     air_avg = repmat(mean(segment(1:end, 100:200, 1:end) + 1, 2), [1, size(segment, 2), 1]);
     pc_prj = -log((segment + 1) ./ air_avg);
     
+    pixel_one = segment(1:end, 1:end, 1);
+    pixel_two = segment(1:end, 1:end, 2);
+
     % 64像素对36组AL、PMMA厚度组合的高低能数据 
     pixel_pc_prj = zeros(2, 36, 64);
     for i=1:36
@@ -68,7 +72,10 @@ function  pixel_pc_prj = get_step_pc(segment, index)
             pixel_pc_prj(2, i, pixel) = mean(pc_prj(pixel, index+5:index+8, 2));
         end
     end
-    % pixel_one = pixel_pc_prj(1:end, 1:end, 1);
+    
+    pixel_one = segment(1:end, 1:end, 1);
+    pixel_two = segment(1:end, 1:end, 2);
+    
 end
 
 
